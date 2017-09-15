@@ -1,4 +1,5 @@
-#Sort player hands
+""" Reads file, puts player 1 and player 2 hands as lists of tuples into the lists
+'player1' and 'player2' """
 def player_hands(filename, player1, player2):
     file = open(filename, "r")
     lines = file.readlines()
@@ -23,6 +24,8 @@ def player_hands(filename, player1, player2):
         player1.append(player1hand)
         player2.append(player2hand)
 
+""" Given a hand in the form [(v,s), (v,s), (v,s), (v,s), (v,s)], returns the values
+v as a sorted list. """
 def get_values(hand):
     values = []
     faces = {'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14}
@@ -36,6 +39,7 @@ def get_values(hand):
     values.sort()
     return values
 
+""" Given a sorted list of values [v, v, v, v, v], returns a list without duplicates. """
 def get_unique_vals(values):
     unique_vals = []
     for val in values:
@@ -43,6 +47,8 @@ def get_unique_vals(values):
             unique_vals.append(val)
     return unique_vals
 
+""" Given a hand in the form [(v,s), (v,s), (v,s), (v,s), (v,s)], returns the suits
+(without duplicates) """
 def get_suits(hand):
     suits = []
     for card in hand:
@@ -50,19 +56,19 @@ def get_suits(hand):
             suits.append(card[1])
     return suits
 
+""" Bunch of functions to check what rank a hand gets. """
 #ROYAL FLUSH: T, J, Q, K, A in same suit
 def royal_flush(values, suits):
-    #Check if royal first
-    royals = ['T', 'J', 'Q', 'K', 'A']
+    royals = [10, 11, 12, 13, 14]
 
+    #Check if it has one occurence of each royal
     for val in values:
         if (val in royals):
-            royals.remove(card[0])
+            royals.remove(val)
         else:
             return False
 
-    #Did not return false, therefore it IS royal
-    #Now just check if it's a flush
+    #Check if same suit
     return (len(suits)==1)
 
 #STRAIGHT FLUSH: All cards consecutive values of same suit
@@ -101,19 +107,14 @@ def three_of_a_kind(values, suits):
 #TWO PAIRS: 2 different PAIRS
 def two_pairs(values, suits):
     unique_vals = get_unique_vals(values)
-    return (len(unique_vals)==3)
+    return (len(unique_vals) == 3)
 
 #ONE PAIR: 2 cards of same value
 def one_pair(values, suits):
     unique_vals = get_unique_vals(values)
     return (len(unique_vals)==4)
-#compare card: Returns player with the highest value card
-def compare_card(val1, val2):
-    if (val1 > val2):
-        return 1
-    else:
-        return 2
 
+#HIGH CARD: Highest value card (returns player rather than boolean)
 def high_card(values1, values2):
     uniq1 = get_unique_vals(values1)
     uniq2 = get_unique_vals(values2)
@@ -129,6 +130,14 @@ def high_card(values1, values2):
             i = i - 1
             j = j - 1
 
+#Compare card: Returns player with the highest value card
+def compare_card(val1, val2):
+    if (val1 > val2):
+        return 1
+    else:
+        return 2
+
+""" Assigns player a score based on their hand rank. """
 def get_scores(values, suits):
     if royal_flush(values, suits):
         return 10
@@ -151,12 +160,14 @@ def get_scores(values, suits):
     else:
         return 0
 
+""" Function to determine winner if both players have full house. """
 def tied_full_house(values1, values2):
     three1 = 0
     three2 = 0
     pair1 = 0
     pair2 = 0
 
+    #Work out which value is the "three of a kind" and which is the "pair" for each player
     if (values1.count(values1[0]) == 3):
         three1 = values1[0]
         pair1 = values1[4]
@@ -171,6 +182,7 @@ def tied_full_house(values1, values2):
         three2 = values2[4]
         pair2 = values2[0]
 
+    #Determine winner
     if three1 > three2:
         return 1
     elif three2 > three1:
@@ -181,6 +193,7 @@ def tied_full_house(values1, values2):
         else:
             return 2
 
+""" Function to determine winner if both players have 2 pairs """
 def tied_two_pairs(values1, values2):
     highest = high_card(values1, values2)
     uniq1 = get_unique_vals(values1)
@@ -203,6 +216,7 @@ def tied_two_pairs(values1, values2):
         else:
             return highest
 
+""" Function to determine winner if both players have 1 pair """
 def tied_one_pair(values1, values2):
     highest = high_card(values1, values2)
     uniq1 = get_unique_vals(values1)
@@ -220,6 +234,7 @@ def tied_one_pair(values1, values2):
     else:
         return highest
 
+""" Function that deals with tied score resolutions """
 def tied_scores(score, values1, values2):
     if (score == 9): #straight flush
         return compare_card(values1[4], values2[4])
@@ -240,7 +255,7 @@ def tied_scores(score, values1, values2):
     if (score == 0):
         return compare_card(values1[4], values2[4])
 
-#The main thing
+
 def main():
     player1 = []
     player2 = []
@@ -268,18 +283,7 @@ def main():
                 wins1 += 1
             else:
                 wins2 += 1
-        """
-        if score1 == 5 or score2 == 5:
-            print(i+1, ":", score1, score2, wins1, wins2)"""
 
-        #print ("wins: ", wins1," ", wins2)
-
-    print (wins1)
-    print (wins2)
-
-    #print (player1)
-    #print (get_values(player2[2]))
-
-    #do thing
+    print ("Answer: ", wins1)
 
 main()
