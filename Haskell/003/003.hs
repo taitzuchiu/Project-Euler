@@ -1,10 +1,10 @@
 flrt = floor . sqrt . fromIntegral
 
 isComposite :: Int -> Bool
-isComposite x = any (\y -> x `mod` y == 0) [2 .. (floor . sqrt . fromIntegral) x]
+isComposite x = any (\y -> x `mod` y == 0) (2 : [3, 5 .. (floor . sqrt . fromIntegral) x])
 
 primesTo :: Int -> [Int]
-primesTo n = takeWhile (<= n) [x | x <- [2..], not (isComposite x)]
+primesTo n = takeWhile (<= n) (2: [x | x <- [3..], not (isComposite x)])
 
 primeFactors :: Int -> [Int]
 primeFactors n = [x | x <- primesTo (flrt n), n `mod` x == 0]
